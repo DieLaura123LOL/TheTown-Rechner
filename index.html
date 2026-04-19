@@ -6,28 +6,72 @@
 
 <style>
 body {
-  background-color: black;
+  background: #0d0d0d;
   color: white;
   font-family: Arial, sans-serif;
-  text-align: center;
-  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
 .container {
-  border: 1px solid white;
-  padding: 20px;
-  display: inline-block;
-}
-
-input {
-  margin: 5px;
-  padding: 8px;
-  width: 80px;
-  text-align: center;
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 15px;
+  width: 320px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.1);
 }
 
 h1 {
+  text-align: center;
   margin-bottom: 20px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  align-items: center;
+}
+
+label {
+  font-size: 14px;
+}
+
+input {
+  width: 70px;
+  padding: 6px;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+input:focus {
+  outline: none;
+  box-shadow: 0 0 5px white;
+}
+
+hr {
+  margin: 20px 0;
+  border: 0.5px solid #444;
+}
+
+.result {
+  margin-top: 10px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.total {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.discount {
+  color: #bbbbbb;
 }
 </style>
 </head>
@@ -35,27 +79,37 @@ h1 {
 <body>
 
 <div class="container">
-  <h1>RP Verkaufsrechner</h1>
+  <h1>RP Rechner</h1>
 
-  <p>Wagyu Steak (250$)</p>
-  <input type="number" id="wagyu" value="0" oninput="berechnen()">
+  <div class="item">
+    <label>Wagyu Steak (250$)</label>
+    <input type="number" id="wagyu" value="0" oninput="berechnen()">
+  </div>
 
-  <p>Zitronenwasser (50$)</p>
-  <input type="number" id="wasser" value="0" oninput="berechnen()">
+  <div class="item">
+    <label>Zitronenwasser (50$)</label>
+    <input type="number" id="wasser" value="0" oninput="berechnen()">
+  </div>
 
-  <p>Rotwein (100$)</p>
-  <input type="number" id="wein" value="0" oninput="berechnen()">
+  <div class="item">
+    <label>Rotwein (100$)</label>
+    <input type="number" id="wein" value="0" oninput="berechnen()">
+  </div>
 
-  <p>Panna Cotta (75$)</p>
-  <input type="number" id="panna" value="0" oninput="berechnen()">
+  <div class="item">
+    <label>Panna Cotta (75$)</label>
+    <input type="number" id="panna" value="0" oninput="berechnen()">
+  </div>
 
   <hr>
 
-  <p>Rabatt (%)</p>
-  <input type="number" id="rabatt" value="0" oninput="berechnen()">
+  <div class="item">
+    <label>Rabatt (%)</label>
+    <input type="number" id="rabatt" value="0" oninput="berechnen()">
+  </div>
 
-  <h2 id="gesamt">Gesamt: 0$</h2>
-  <h2 id="endpreis">Endpreis: 0$</h2>
+  <div class="result" id="gesamt">Gesamt: 0$</div>
+  <div class="result total" id="endpreis">Endpreis: 0$</div>
 </div>
 
 <script>
