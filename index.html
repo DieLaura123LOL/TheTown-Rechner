@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>RP Verkaufsrechner</title>
+
+<style>
+body {
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 40px;
+}
+
+.container {
+  border: 1px solid white;
+  padding: 20px;
+  display: inline-block;
+}
+
+input {
+  margin: 5px;
+  padding: 8px;
+  width: 80px;
+  text-align: center;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h1>RP Verkaufsrechner</h1>
+
+  <p>Wagyu Steak (250$)</p>
+  <input type="number" id="wagyu" value="0" oninput="berechnen()">
+
+  <p>Zitronenwasser (50$)</p>
+  <input type="number" id="wasser" value="0" oninput="berechnen()">
+
+  <p>Rotwein (100$)</p>
+  <input type="number" id="wein" value="0" oninput="berechnen()">
+
+  <p>Panna Cotta (75$)</p>
+  <input type="number" id="panna" value="0" oninput="berechnen()">
+
+  <hr>
+
+  <p>Rabatt (%)</p>
+  <input type="number" id="rabatt" value="0" oninput="berechnen()">
+
+  <h2 id="gesamt">Gesamt: 0$</h2>
+  <h2 id="endpreis">Endpreis: 0$</h2>
+</div>
+
+<script>
+function berechnen() {
+  let wagyu = document.getElementById("wagyu").value * 250;
+  let wasser = document.getElementById("wasser").value * 50;
+  let wein = document.getElementById("wein").value * 100;
+  let panna = document.getElementById("panna").value * 75;
+
+  let gesamt = wagyu + wasser + wein + panna;
+
+  let rabatt = document.getElementById("rabatt").value;
+  let endpreis = gesamt - (gesamt * rabatt / 100);
+
+  document.getElementById("gesamt").innerText = "Gesamt: " + gesamt + "$";
+  document.getElementById("endpreis").innerText = "Endpreis: " + endpreis.toFixed(2) + "$";
+}
+</script>
+
+</body>
+</html>
