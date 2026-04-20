@@ -9,53 +9,50 @@ body {
   background: #0d0d0d;
   color: white;
   font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+/* GRID für 3 Rechner */
+.wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
-  margin: 0;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
 .container {
   background: #1a1a1a;
-  padding: 30px;
+  padding: 20px;
   border-radius: 15px;
-  width: 360px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.08);
+  width: 300px;
+  box-shadow: 0 0 15px rgba(255,255,255,0.08);
 }
 
-h1 {
+h2 {
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 26px;
 }
 
 .item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 12px 0;
-  font-size: 16px;
-}
-
-label {
-  flex: 1;
+  margin: 10px 0;
 }
 
 .controls {
   display: flex;
-  align-items: center;
   gap: 5px;
 }
 
 button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
   background: #333;
   color: white;
-  border: none;
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  font-size: 18px;
+  font-size: 16px;
   cursor: pointer;
 }
 
@@ -64,115 +61,118 @@ button:hover {
 }
 
 .value {
-  width: 40px;
+  width: 35px;
   text-align: center;
-  font-size: 16px;
-}
-
-hr {
-  margin: 20px 0;
-  border: 0.5px solid #444;
 }
 
 .result {
   text-align: center;
-  font-size: 20px;
   margin-top: 10px;
+  font-size: 18px;
 }
 
 .total {
-  font-size: 22px;
   font-weight: bold;
+  font-size: 20px;
+}
+
+hr {
+  border: 0.5px solid #444;
+  margin: 15px 0;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-  <h1>RP Rechner</h1>
+<div class="wrapper">
 
+<!-- RECHNER TEMPLATE -->
+<script>
+function createCalculator(id) {
+  return `
+  <div class="container">
+    <h2>Kunde ${id}</h2>
+
+    ${createItem("Wagyu Steak (250$)", "wagyu", id)}
+    ${createItem("Zitronenwasser (50$)", "wasser", id)}
+    ${createItem("Rotwein (100$)", "wein", id)}
+    ${createItem("Panna Cotta (75$)", "panna", id)}
+
+    <hr>
+
+    ${createItem("Rabatt (%)", "rabatt", id, 5)}
+
+    <div class="result" id="gesamt-${id}">Gesamt: 0$</div>
+    <div class="result total" id="endpreis-${id}">Endpreis: 0$</div>
+  </div>
+  `;
+}
+
+function createItem(label, name, id, step = 1) {
+  return `
   <div class="item">
-    <label>Wagyu Steak (250$)</label>
+    <span>${label}</span>
     <div class="controls">
-      <button onclick="change('wagyu', -1)">-</button>
-      <div class="value" id="wagyuVal">0</div>
-      <button onclick="change('wagyu', 1)">+</button>
+      <button onclick="change('${name}-${id}', -${step})">-</button>
+      <div class="value" id="${name}-${id}">0</div>
+      <button onclick="change('${name}-${id}', ${step})">+</button>
     </div>
   </div>
+  `;
+}
+</script>
 
-  <div class="item">
-    <label>Zitronenwasser (50$)</label>
-    <div class="controls">
-      <button onclick="change('wasser', -1)">-</button>
-      <div class="value" id="wasserVal">0</div>
-      <button onclick="change('wasser', 1)">+</button>
-    </div>
-  </div>
+<div id="app"></div>
 
-  <div class="item">
-    <label>Rotwein (100$)</label>
-    <div class="controls">
-      <button onclick="change('wein', -1)">-</button>
-      <div class="value" id="weinVal">0</div>
-      <button onclick="change('wein', 1)">+</button>
-    </div>
-  </div>
-
-  <div class="item">
-    <label>Panna Cotta (75$)</label>
-    <div class="controls">
-      <button onclick="change('panna', -1)">-</button>
-      <div class="value" id="pannaVal">0</div>
-      <button onclick="change('panna', 1)">+</button>
-    </div>
-  </div>
-
-  <hr>
-
-  <div class="item">
-    <label>Rabatt (%)</label>
-    <div class="controls">
-      <button onclick="change('rabatt', -5)">-</button>
-      <div class="value" id="rabattVal">0</div>
-      <button onclick="change('rabatt', 5)">+</button>
-    </div>
-  </div>
-
-  <div class="result" id="gesamt">Gesamt: 0$</div>
-  <div class="result total" id="endpreis">Endpreis: 0$</div>
 </div>
 
 <script>
-let values = {
-  wagyu: 0,
-  wasser: 0,
-  wein: 0,
-  panna: 0,
-  rabatt: 0
-};
+// Rechner erzeugen
+document.getElementById("app").innerHTML =
+  createCalculator(1) +
+  createCalculator(2) +
+  createCalculator(3);
 
-function change(item, amount) {
-  values[item] += amount;
+// Werte speichern
+let values = {};
 
-  if (values[item] < 0) values[item] = 0;
-  if (item === "rabatt" && values[item] > 100) values[item] = 100;
+function change(id, amount) {
+  if (!values[id]) values[id] = 0;
 
-  document.getElementById(item + "Val").innerText = values[item];
+  values[id] += amount;
+  if (values[id] < 0) values[id] = 0;
+
+  // Rabatt max 100
+  if (id.includes("rabatt") && values[id] > 100) values[id] = 100;
+
+  document.getElementById(id).innerText = values[id];
+
   berechnen();
 }
 
 function berechnen() {
-  let gesamt =
-    values.wagyu * 250 +
-    values.wasser * 50 +
-    values.wein * 100 +
-    values.panna * 75;
+  for (let i = 1; i <= 3; i++) {
+    let wagyu = values["wagyu-" + i] || 0;
+    let wasser = values["wasser-" + i] || 0;
+    let wein = values["wein-" + i] || 0;
+    let panna = values["panna-" + i] || 0;
+    let rabatt = values["rabatt-" + i] || 0;
 
-  let endpreis = gesamt - (gesamt * values.rabatt / 100);
+    let gesamt =
+      wagyu * 250 +
+      wasser * 50 +
+      wein * 100 +
+      panna * 75;
 
-  document.getElementById("gesamt").innerText = "Gesamt: " + gesamt + "$";
-  document.getElementById("endpreis").innerText = "Endpreis: " + endpreis.toFixed(2) + "$";
+    let endpreis = gesamt - (gesamt * rabatt / 100);
+
+    document.getElementById("gesamt-" + i).innerText =
+      "Gesamt: " + gesamt + "$";
+
+    document.getElementById("endpreis-" + i).innerText =
+      "Endpreis: " + endpreis.toFixed(2) + "$";
+  }
 }
 </script>
 
