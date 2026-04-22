@@ -2,29 +2,24 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>RP Verkaufsrechner</title>
+<title>RP Food Rechner</title>
 
 <style>
 body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background: #0d0d0d;
   color: white;
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
 }
 
-/* GRID FIX */
 .wrapper {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, 320px);
   gap: 20px;
-}
-
-/* Für kleinere Bildschirme */
-@media (max-width: 900px) {
-  .wrapper {
-    grid-template-columns: 1fr;
-  }
 }
 
 .container {
@@ -32,6 +27,8 @@ body {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 0 15px rgba(255,255,255,0.08);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 h2 {
@@ -42,7 +39,8 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
+  margin: 6px 0;
+  font-size: 14px;
 }
 
 .controls {
@@ -51,13 +49,12 @@ h2 {
 }
 
 button {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border: none;
   border-radius: 6px;
   background: #333;
   color: white;
-  font-size: 16px;
   cursor: pointer;
 }
 
@@ -66,24 +63,23 @@ button:hover {
 }
 
 .value {
-  width: 35px;
+  width: 30px;
   text-align: center;
 }
 
 .result {
   text-align: center;
   margin-top: 10px;
-  font-size: 18px;
 }
 
 .total {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 hr {
   border: 0.5px solid #444;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 </style>
 </head>
@@ -93,47 +89,73 @@ hr {
 <div class="wrapper" id="app"></div>
 
 <script>
-// HTML für einen Rechner
+// NEUE PREISE
+const products = [
+  ["Wagyu Steak", 300],
+  ["Peking Ente", 250],
+  ["Ramen", 250],
+  ["Jakobsmuscheln", 200],
+  ["Gyoza", 200],
+  ["Sellerie-Apfel Suppe", 200],
+  ["Miso Suppe", 175],
+  ["Kohlrabi-Flusskrebs", 175],
+  ["Sommerrolle", 150],
+  ["Frühlingsrolle", 150],
+  ["Mochi", 150],
+  ["Gebackene Bannane", 150],
+  ["Matcha Eiscreme", 150],
+  ["Hotteok", 150],
+  ["Soju Caipirinha", 125],
+  ["Rotwein", 100],
+  ["Ginjo Sake", 100],
+  ["Red Lantern", 100],
+  ["Tofu Nut", 80],
+  ["Mai Tai", 80],
+  ["Bubble Tea", 100],
+  ["Zitronenwasser", 75],
+  ["Winter Sun", 75],
+  ["Jasmintee", 75]
+];
+
 function createCalculator(id) {
-  return `
-  <div class="container">
-    <h2>Kunde ${id}</h2>
+  let html = `<div class="container"><h2>Kunde ${id}</h2>`;
 
-    ${item("Wagyu Steak (250$)", "wagyu", id)}
-    ${item("Zitronenwasser (50$)", "wasser", id)}
-    ${item("Rotwein (100$)", "wein", id)}
-    ${item("Panna Cotta (75$)", "panna", id)}
+  products.forEach((p, i) => {
+    html += `
+    <div class="item">
+      <span>${p[0]} (${p[1]}$)</span>
+      <div class="controls">
+        <button onclick="change('${id}-${i}', -1)">-</button>
+        <div class="value" id="${id}-${i}">0</div>
+        <button onclick="change('${id}-${i}', 1)">+</button>
+      </div>
+    </div>`;
+  });
 
-    <hr>
-
-    ${item("Rabatt (%)", "rabatt", id, 5)}
-
-    <div class="result" id="gesamt-${id}">Gesamt: 0$</div>
-    <div class="result total" id="endpreis-${id}">Endpreis: 0$</div>
-  </div>
-  `;
-}
-
-function item(label, name, id, step = 1) {
-  return `
+  html += `
+  <hr>
   <div class="item">
-    <span>${label}</span>
+    <span>Rabatt (%)</span>
     <div class="controls">
-      <button onclick="change('${name}-${id}', -${step})">-</button>
-      <div class="value" id="${name}-${id}">0</div>
-      <button onclick="change('${name}-${id}', ${step})">+</button>
+      <button onclick="change('rabatt-${id}', -5)">-</button>
+      <div class="value" id="rabatt-${id}">0</div>
+      <button onclick="change('rabatt-${id}', 5)">+</button>
     </div>
   </div>
-  `;
+
+  <div class="result" id="gesamt-${id}">Gesamt: 0$</div>
+  <div class="result total" id="endpreis-${id}">Endpreis: 0$</div>
+
+  </div>`;
+
+  return html;
 }
 
-// 3 Rechner einfügen
 document.getElementById("app").innerHTML =
   createCalculator(1) +
   createCalculator(2) +
   createCalculator(3);
 
-// Werte speichern
 let values = {};
 
 function change(id, amount) {
@@ -149,26 +171,22 @@ function change(id, amount) {
 }
 
 function berechnen() {
-  for (let i = 1; i <= 3; i++) {
-    let wagyu = values["wagyu-" + i] || 0;
-    let wasser = values["wasser-" + i] || 0;
-    let wein = values["wein-" + i] || 0;
-    let panna = values["panna-" + i] || 0;
-    let rabatt = values["rabatt-" + i] || 0;
+  for (let k = 1; k <= 3; k++) {
+    let gesamt = 0;
 
-    let gesamt =
-      wagyu * 250 +
-      wasser * 50 +
-      wein * 100 +
-      panna * 75;
+    products.forEach((p, i) => {
+      let val = values[`${k}-${i}`] || 0;
+      gesamt += val * p[1];
+    });
 
+    let rabatt = values[`rabatt-${k}`] || 0;
     let endpreis = gesamt - (gesamt * rabatt / 100);
 
-    document.getElementById("gesamt-" + i).innerText =
-      "Gesamt: " + gesamt + "$";
+    document.getElementById(`gesamt-${k}`).innerText =
+      "Gesamt: " + gesamt.toLocaleString() + "$";
 
-    document.getElementById("endpreis-" + i).innerText =
-      "Endpreis: " + endpreis.toFixed(2) + "$";
+    document.getElementById(`endpreis-${k}`).innerText =
+      "Endpreis: " + endpreis.toLocaleString() + "$";
   }
 }
 </script>
