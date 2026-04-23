@@ -16,14 +16,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/* GRID */
 .wrapper {
   display: grid;
   grid-template-columns: repeat(4, 300px);
   gap: 20px;
 }
 
-/* BOX */
 .container {
   background: #1a1a1a;
   padding: 15px;
@@ -47,17 +45,18 @@ h2 {
 
 .controls {
   display: flex;
-  gap: 5px;
+  gap: 4px;
 }
 
 button {
-  width: 26px;
+  width: 32px;
   height: 26px;
   border: none;
   border-radius: 6px;
   background: #333;
   color: white;
   cursor: pointer;
+  font-size: 12px;
 }
 
 button:hover {
@@ -104,7 +103,6 @@ hr {
 <div class="wrapper" id="app"></div>
 
 <script>
-// EXAKTE HEX FARBEN
 const products = [
   ["Wagyu Steak", 300, "#dd1414"],
   ["Peking Ente", 250, "#dd1414"],
@@ -144,9 +142,11 @@ function createCalculator(id) {
     <div class="item">
       <span style="color:${p[2]}">${p[0]} (${p[1]}$)</span>
       <div class="controls">
+        <button onclick="change('${id}-${i}', -10)">-10</button>
         <button onclick="change('${id}-${i}', -1)">-</button>
         <div class="value" id="${id}-${i}">0</div>
         <button onclick="change('${id}-${i}', 1)">+</button>
+        <button onclick="change('${id}-${i}', 10)">+10</button>
       </div>
     </div>`;
   });
@@ -156,9 +156,11 @@ function createCalculator(id) {
   <div class="item">
     <span>Rabatt (%)</span>
     <div class="controls">
+      <button onclick="change('rabatt-${id}', -10)">-10</button>
       <button onclick="change('rabatt-${id}', -5)">-</button>
       <div class="value" id="rabatt-${id}">0</div>
       <button onclick="change('rabatt-${id}', 5)">+</button>
+      <button onclick="change('rabatt-${id}', 10)">+10</button>
     </div>
   </div>
 
@@ -172,7 +174,7 @@ function createCalculator(id) {
   return html;
 }
 
-// 4 Rechner erstellen
+// 4 Rechner
 document.getElementById("app").innerHTML =
   createCalculator(1) +
   createCalculator(2) +
